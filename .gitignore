@@ -1,0 +1,9 @@
+# Build artifacts
+Drone-Shooter
+*.o
+src/*.o
+build/
+
+# Large assets
+resources/models/trees/snow_land_tree/Tree_Red-spruce.obj
+resources/models/trees/snow_land_tree.zip
