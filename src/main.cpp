@@ -23,7 +23,7 @@ int main()
     World world(envType); // will choose env. type randomly if input is invalid
     EnemyManager manager;
     CollisionDetector detector;
-    TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");
+    TextRenderer text(ASSET_PATH "/resources/font/theboldfont.ttf", ASSET_PATH "/shaders/text.vert", ASSET_PATH "/shaders/text.frag");
 
     // timing
     float currentFrame;

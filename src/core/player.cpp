@@ -56,8 +56,8 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     setGunModelMatrix();
 
     // load model and compile shaders
-    gun = Model("resources/models/handgun/Handgun_obj.obj", false);
-    shader = Shader("shaders/model.vert", "shaders/model.frag");
+    gun = Model(ASSET_PATH "/resources/models/handgun/Handgun_obj.obj", false);
+    shader = Shader(ASSET_PATH "/shaders/model.vert", ASSET_PATH "/shaders/model.frag");
 
     // audio setup
     audioSetup();
@@ -102,8 +102,8 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     setGunModelMatrix();
 
     // load model and compile shaders
-    gun = Model("resources/models/handgun/Handgun_obj.obj", false);
-    shader = Shader("shaders/model.vert", "shaders/model.frag");
+    gun = Model(ASSET_PATH "/resources/models/handgun/Handgun_obj.obj", false);
+    shader = Shader(ASSET_PATH "/shaders/model.vert", ASSET_PATH "/shaders/model.frag");
 
     // audio setup
     audioSetup();
@@ -579,9 +579,9 @@ void Player::createBoundingBox()
 void Player::audioSetup()
 {
     // wav file paths
-    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
-    walkSoundPath = "resources/audio/footsteps.wav";
-    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
+    gunshotSoundPath = ASSET_PATH "/resources/audio/gun-gunshot-02.wav";
+    walkSoundPath = ASSET_PATH "/resources/audio/footsteps.wav";
+    damageSoundPath = ASSET_PATH "/resources/audio/minecraft_hit_soundmp3converter.wav";
 
     // miniaudio engines setup
     ma_result result = ma_engine_init(NULL, &engine);

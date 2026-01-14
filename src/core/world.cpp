@@ -71,39 +71,39 @@ void World::setupWorld()
     }
     
     // create shaders
-    shaderModel = Shader("shaders/instancing.vert", "shaders/model.frag");
-    shaderGround = Shader("shaders/ground.vert", "shaders/ground.frag");
-    shaderSkybox = Shader("shaders/skybox.vert", "shaders/skybox.frag");
+    shaderModel = Shader(ASSET_PATH "/shaders/instancing.vert", ASSET_PATH "/shaders/model.frag");
+    shaderGround = Shader(ASSET_PATH "/shaders/ground.vert", ASSET_PATH "/shaders/ground.frag");
+    shaderSkybox = Shader(ASSET_PATH "/shaders/skybox.vert", ASSET_PATH "/shaders/skybox.frag");
 
     // load correct models, skybox and ground texture
     std::string dirName;
     if (environmentType == "desert")
     {
-        surrounding = Model("resources/models/rocks/rock_desert/rock.obj", true);
-        tree = Model("resources/models/trees/desert_land_tree/hoewa_Forsteriana_1.obj", true);
-        dirName = "resources/skybox/desert_land/";
-        groundTexture = TextureFromFile("desert_ground.png", "resources/textures", false);
+        surrounding = Model(ASSET_PATH "/resources/models/rocks/rock_desert/rock.obj", true);
+        tree = Model(ASSET_PATH "/resources/models/trees/desert_land_tree/hoewa_Forsteriana_1.obj", true);
+        dirName = ASSET_PATH "/resources/skybox/desert_land/";
+        groundTexture = TextureFromFile("desert_ground.png", ASSET_PATH "/resources/textures", false);
     }
     if (environmentType == "forest")
     {
-        surrounding = Model("resources/models/flowers/anemone_hybrida.obj", true);
-        tree = Model("resources/models/trees/forest_land_tree/trees9.obj", true);
-        dirName = "resources/skybox/forest_land/";
-        groundTexture = TextureFromFile("forest_ground.png", "resources/textures", false);
+        surrounding = Model(ASSET_PATH "/resources/models/flowers/anemone_hybrida.obj", true);
+        tree = Model(ASSET_PATH "/resources/models/trees/forest_land_tree/trees9.obj", true);
+        dirName = ASSET_PATH "/resources/skybox/forest_land/";
+        groundTexture = TextureFromFile("forest_ground.png", ASSET_PATH "/resources/textures", false);
     }
     if (environmentType == "snow")
     {   
-        surrounding = Model("resources/models/rocks/rock_snow/rock.obj", true);
-        tree = Model("resources/models/trees/snow_land_tree/Tree_Red-spruce.obj", true);
-        dirName = "resources/skybox/snow_land/";
-        groundTexture = TextureFromFile("snow_ground.png", "resources/textures", false);
+        surrounding = Model(ASSET_PATH "/resources/models/rocks/rock_snow/rock.obj", true);
+        tree = Model(ASSET_PATH "/resources/models/trees/snow_land_tree/Tree_Red-spruce.obj", true);
+        dirName = ASSET_PATH "/resources/skybox/snow_land/";
+        groundTexture = TextureFromFile("snow_ground.png", ASSET_PATH "/resources/textures", false);
     }
     if (environmentType == "night")
     {   
-        surrounding = Model("resources/models/pumpkin/pumpkin face.obj", true);
-        tree = Model("resources/models/trees/night_land_tree/Tree_001.obj", true);
-        dirName = "resources/skybox/night_land/";
-        groundTexture = TextureFromFile("night_ground.png", "resources/textures", false);
+        surrounding = Model(ASSET_PATH "/resources/models/pumpkin/pumpkin face.obj", true);
+        tree = Model(ASSET_PATH "/resources/models/trees/night_land_tree/Tree_001.obj", true);
+        dirName = ASSET_PATH "/resources/skybox/night_land/";
+        groundTexture = TextureFromFile("night_ground.png", ASSET_PATH "/resources/textures", false);
     }
     
     // generate positions, model matrices and set up instanced array buffers for trees and flowers

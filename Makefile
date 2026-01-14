@@ -1,68 +1,21 @@
-# Compiler
-CXX = g++
-CC = gcc
+# CMake Wrapper Makefile
 
-# Project Name
-TARGET = Drone-Shooter
+.PHONY: all build clean run help
 
-# Directories
-SRC_DIR = src
-INC_DIR = include
+all: build
 
-# Sources
-# Find all .cpp and .c files in src/ and the main.cpp in root
-SRCS_CPP = $(wildcard $(SRC_DIR)/*.cpp) main.cpp
-SRCS_C = $(wildcard $(SRC_DIR)/*.c)
-OBJS = $(SRCS_CPP:.cpp=.o) $(SRCS_C:.c=.o)
+build:
+	mkdir -p build && cd build && cmake .. && cmake --build .
 
-# dependencies
-PKG_DEPS = glfw3 assimp freetype2
-
-# Check if pkg-config is available and packages exist
-PKG_CONFIG_EXISTS := $(shell command -v pkg-config 2> /dev/null)
-ifdef PKG_CONFIG_EXISTS
-    PKG_CFLAGS := $(shell pkg-config --cflags $(PKG_DEPS))
-    PKG_LIBS := $(shell pkg-config --libs $(PKG_DEPS))
-else
-    $(warning pkg-config not found. Make sure dependencies are installed and paths are correct.)
-endif
-
-# Flags
-CXXFLAGS = -std=c++17 -Wall -g -I$(INC_DIR) $(PKG_CFLAGS)
-CFLAGS = -Wall -g -I$(INC_DIR) $(PKG_CFLAGS)
-
-# Linker Flags (includes system libraries used in CMakeLists.txt)
-LDFLAGS = $(PKG_LIBS) -lGL -lX11 -lpthread -ldl
-
-# Targets
-.PHONY: all clean run help
-
-# Default target
-all: $(TARGET)
-
-# Link the executable
-$(TARGET): $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LDFLAGS)
-
-# Compile C++ source files
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Compile C source files
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Run the application
-run: $(TARGET)
-	./$(TARGET)
-
-# Clean build artifacts
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf build
+	rm -f game Drone-Shooter
 
-# Help
+run: build
+	./game
+
 help:
-	@echo "Makefile for $(TARGET)"
+	@echo "Hardened Build System (via CMake)"
 	@echo "Usage:"
 	@echo "  make        Build the project"
 	@echo "  make run    Build and run the project"

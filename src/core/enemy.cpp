@@ -10,10 +10,10 @@ const float Enemy::SPEED = 0.02f;
 Enemy::Enemy()
 {
     // load model and shaders
-    drone = Model("resources/models/drone/E 45 Aircraft_obj.obj", false);
-    laserBeam = Model("resources/models/handgun/Handgun_obj.obj", false);
-    shaderDrone = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
-    shaderLaser = Shader("shaders/model.vert", "shaders/laser.frag");
+    drone = Model(ASSET_PATH "/resources/models/drone/E 45 Aircraft_obj.obj", false);
+    laserBeam = Model(ASSET_PATH "/resources/models/handgun/Handgun_obj.obj", false);
+    shaderDrone = Shader(ASSET_PATH "/shaders/explode.vert", ASSET_PATH "/shaders/explode.frag", ASSET_PATH "/shaders/explode.geom");
+    shaderLaser = Shader(ASSET_PATH "/shaders/model.vert", ASSET_PATH "/shaders/laser.frag");
 
     // set default values
     isDead = false;
@@ -29,9 +29,9 @@ Enemy::Enemy()
     generatePosition();
 
     // wav file paths
-    soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
-    soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
-    soundLaserPath = "resources/audio/blaster-2-81267.wav";
+    soundExplosionPath = ASSET_PATH "/resources/audio/mixkit-shatter-shot-explosion-1693.wav";
+    soundHoverPath = ASSET_PATH "/resources/audio/helicopter-hovering-01.wav";
+    soundLaserPath = ASSET_PATH "/resources/audio/blaster-2-81267.wav";
 
     // miniaudio engine setup
     ma_result result = ma_engine_init(NULL, &engine);
