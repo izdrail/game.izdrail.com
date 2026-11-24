@@ -93,7 +93,7 @@ public:
 
     /// Destructor.
     /// Dev/QA: move the start point (x,z on the terrain) and set yaw in degrees.
-    void setSpawn(float x, float z, float yawDeg);
+    void setSpawn(float x, float z, float yawDeg, float pitchDeg = 0.0f);
 
     ~Player();
 

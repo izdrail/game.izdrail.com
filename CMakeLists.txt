@@ -20,6 +20,8 @@ set(SOURCE_FILES
     src/core/ray.cpp
     src/core/world.cpp
     src/world/terrain.cpp
+    src/world/roads.cpp
+    src/world/outpost_layout.cpp
     src/render/glad.c
     src/render/hud.cpp
     src/render/mesh.cpp
@@ -27,6 +29,7 @@ set(SOURCE_FILES
     src/render/shader.cpp
     src/render/skybox.cpp
     src/render/terrain_renderer.cpp
+    src/render/outpost_renderer.cpp
     src/render/text_renderer.cpp
     src/render/texture_loading.cpp
     src/render/stb_image.cpp
@@ -105,5 +108,7 @@ set_target_properties(game PROPERTIES
 enable_testing()
 add_executable(test_math tests/test_math.cpp)
 add_test(NAME MathTest COMMAND test_math)
-add_executable(test_terrain tests/test_terrain.cpp src/world/terrain.cpp)
+add_executable(test_terrain tests/test_terrain.cpp src/world/terrain.cpp src/world/roads.cpp)
 add_test(NAME TerrainTest COMMAND test_terrain)
+add_executable(test_roads tests/test_roads.cpp src/world/terrain.cpp src/world/roads.cpp src/world/outpost_layout.cpp)
+add_test(NAME RoadsTest COMMAND test_roads)

@@ -1,4 +1,5 @@
 #include "terrain.h"
+#include "roads.h"
 #include <cmath>
 
 namespace
@@ -42,6 +43,17 @@ float fbm(const TerrainConfig &c, uint64_t seed, float x, float z, bool ridged)
 } // namespace
 
 float Terrain::heightAt(float x, float z) const
+{
+    float raw = rawHeightAt(x, z);
+    if (!roads_) return raw;
+    float target;
+    float w = roads_->carve(x, z, target);
+    return w > 0 ? raw + (target - raw) * w : raw;
+}
+
+float Terrain::roadMaskAt(float x, float z) const { return roads_ ? roads_->surfaceMask(x, z) : 0.0f; }
+
+float Terrain::rawHeightAt(float x, float z) const
 {
     const TerrainConfig &c = cfg_;
     float wx = x + c.warpStrength * fbm(c, c.seed ^ 0xA1, x + 31.7f, z - 17.3f, false);

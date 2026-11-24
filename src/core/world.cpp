@@ -10,6 +10,7 @@ const Terrain &World::terrain()
 {
     static TerrainConfig cfg;
     static Terrain *t = nullptr;
+    static RoadNetwork *rn = nullptr;
     static uint64_t builtFor = ~0ull;
     if (!t || builtFor != seed)
     {
@@ -26,10 +27,19 @@ const Terrain &World::terrain()
         cfg.flatBlend = 140.0f;
         cfg.waterLevel = GROUND_Y - 9.0f; // lakes/rivers fill the low valleys
         delete t;
+        delete rn;
         t = new Terrain(cfg);
+        rn = new RoadNetwork();
+        rn->build(*t, 4); // uses uncarved heights
+        t->attachRoads(rn);
         builtFor = seed;
     }
     return *t;
+}
+const RoadNetwork &World::roads()
+{
+    terrain();
+    return *terrain().roads();
 }
 float World::groundHeightAt(float x, float z) { return terrain().heightAt(x, z); }
 float World::eyeFloorAt(float x, float z) { return terrain().heightAt(x, z) - GROUND_Y; }
@@ -150,6 +160,11 @@ void World::setupWorld()
     skybox = SkyBox(filenames, dirName);
 
     terrainRenderer.init(terrain());
+    {
+        std::vector<OutpostBox> boxes;
+        for (const Outpost &o : roads().outposts()) buildOutpostBoxes(o, boxes);
+        outpostRenderer.init(boxes);
+    }
 
     // legacy flat ground quad (no longer drawn)
     groundVertices = getGroundVertexData();
@@ -241,6 +256,7 @@ void World::drawGround()
         st.sunColor = {1.0f, 0.88f, 0.68f}; st.skyAmbient = {0.45f, 0.40f, 0.34f}; st.groundAmbient = {0.30f, 0.22f, 0.14f};
     }
     terrainRenderer.draw(view, projection, st);
+    outpostRenderer.draw(view, projection, st);
     terrainRenderer.drawWater(view, projection, st, static_cast<float>(glfwGetTime()));
 }
 
@@ -340,6 +356,7 @@ static glm::vec3 pickPoint(std::mt19937_64 &gen, float margin, bool useMoisture,
         float x = xz(gen), z = xz(gen);
         if (x * x + z * z < 12.0f * 12.0f) continue;
         if (t.isWater(x, z) || t.slopeDegAt(x, z) > maxSlope) continue;
+        if (World::roads().near(x, z, 5.0f)) continue; // keep roads and outposts clear
         if (useMoisture && u(gen) > t.moistureAt(x, z) * t.moistureAt(x, z)) continue;
         return {x, t.heightAt(x, z), z};
     }

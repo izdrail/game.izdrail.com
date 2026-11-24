@@ -600,10 +600,11 @@ void Player::audioSetup()
     }
     ma_sound_set_looping(&walkingSound, true);
 }
-void Player::setSpawn(float x, float z, float yawDeg)
+void Player::setSpawn(float x, float z, float yawDeg, float pitchDeg)
 {
     Position = glm::vec3(x, World::eyeFloorAt(x, z), z);
     origPosition = Position;
     Yaw = yawDeg;
+    Pitch = pitchDeg;
     updatePlayerVectors();
 }

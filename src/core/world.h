@@ -17,6 +17,8 @@
 #include "skybox.h"
 #include "terrain.h"
 #include "terrain_renderer.h"
+#include "outpost_renderer.h"
+#include "roads.h"
 
 class World
 {
@@ -36,6 +38,8 @@ public:
     static uint64_t seed;
     /// Shared terrain height field (single source of truth for rendering, collision and placement).
     static const Terrain &terrain();
+    /// Outposts and roads carved into the terrain.
+    static const RoadNetwork &roads();
     /// Ground height (world y) at x,z.
     static float groundHeightAt(float x, float z);
     /// Camera/eye y when standing at x,z (original game used eye y=0 on a ground at GROUND_Y).
@@ -83,6 +87,7 @@ private:
     std::vector<float> groundVertices;     // ground vertex data
     unsigned int groundTexture;            // ground texture
     unsigned int groundVAO, groundVBO;     // buffers for ground data (legacy flat quad, unused)
+    OutpostRenderer outpostRenderer;
     TerrainRenderer terrainRenderer;       // chunked heightfield terrain
     unsigned int treeBuffer;               // buffer for tree models
     unsigned int surroundingBuffer;        // buffer for flower/rock models

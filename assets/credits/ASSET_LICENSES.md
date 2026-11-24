@@ -8,3 +8,6 @@
 | assets/resources/terrain/snow_* (Snow006, 1K) | https://ambientcg.com/view?id=Snow006 | ambientCG | CC0 |
 
 Pre-existing assets (drone, trees, flowers, rocks, pumpkin, skyboxes, audio) have no recorded source yet.
+
+## Outposts and roads
+Outpost buildings are procedural placeholder boxes (no external assets); roads use the existing ambientCG dirt material tinted as gravel.
