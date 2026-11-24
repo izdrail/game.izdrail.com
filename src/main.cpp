@@ -14,13 +14,14 @@ int main(int argc, char **argv)
     // options: --seed N, --env desert|forest|snow|night, --autostart
     std::string envType;
     bool autostart = false, hasSpawn = false;
-    float spawnX = 0, spawnZ = 0, spawnYaw = -90;
+    float spawnX = 0, spawnZ = 0, spawnYaw = -90, spawnPitch = 0;
     for (int i = 1; i < argc; ++i)
     {
         std::string a = argv[i];
         if (a == "--seed" && i + 1 < argc) World::seed = std::stoull(argv[++i]);
         else if (a == "--env" && i + 1 < argc) envType = argv[++i];
         else if (a == "--autostart") autostart = true;
+        else if (a == "--pitch" && i + 1 < argc) spawnPitch = std::stof(argv[++i]);
         else if (a == "--spawn" && i + 3 < argc) { spawnX = std::stof(argv[i + 1]); spawnZ = std::stof(argv[i + 2]); spawnYaw = std::stof(argv[i + 3]); hasSpawn = true; i += 3; }
     }
     if (envType.empty())
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
     // prepare game related objects
     Player player; 
     if (autostart) player.hasStarted = true;
-    if (hasSpawn) player.setSpawn(spawnX, spawnZ, spawnYaw);
+    if (hasSpawn) player.setSpawn(spawnX, spawnZ, spawnYaw, spawnPitch);
     World world(envType); // will choose env. type randomly if input is invalid
     EnemyManager manager;
     CollisionDetector detector;

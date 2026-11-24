@@ -3,6 +3,7 @@ out vec4 FragColor;
 
 in vec3 WorldPos;
 in vec3 Normal;
+in float Road;
 
 uniform sampler2D grassC, grassN, grassR;
 uniform sampler2D dirtC, dirtN, dirtR;
@@ -56,11 +57,16 @@ void main()
 
     vec3 nG = planarN(grassN, pxz, 0.35), nD = planarN(dirtN, pxz, 0.30), nS = planarN(snowN, pxz, 0.25);
     vec3 albedo = cG * wGrass + cD * wDirt + cR * wRock + cS * wSnow;
+    // roads and outpost pads: packed gravel with wheel-rut streaks along the surface
+    float road = smoothstep(0.35, 0.85, Road);
+    vec3 gravel = cD * vec3(0.78, 0.74, 0.68) * (0.8 + 0.4 * macro(pxz * 3.0));
+    albedo = mix(albedo, gravel, road);
     // dry look: bleach grass towards sand; wet ground is darker
     albedo = mix(albedo, albedo * vec3(1.25, 1.1, 0.8), dryness * 0.5);
     albedo *= mix(1.0, 0.55, wet);
     float rough = planarR(grassR, pxz, 0.35) * wGrass + planarR(dirtR, pxz, 0.30) * wDirt + rR * wRock + planarR(snowR, pxz, 0.25) * wSnow;
     rough = mix(rough, 0.25, wet * 0.6);
+    rough = mix(rough, 0.9, road);
 
     // detail normal perturbation (UDN blend), fades with distance
     vec2 d = (nG.xy * wGrass + nD.xy * wDirt + nS.xy * wSnow + nR.xy * wRock) * (1.0 - smoothstep(60.0, 260.0, dist));

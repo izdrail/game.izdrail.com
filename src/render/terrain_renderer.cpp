@@ -58,7 +58,7 @@ void TerrainRenderer::init(const Terrain &terrain)
                     float hx = terrain.heightAt(x + c.cellSize, z) - terrain.heightAt(x - c.cellSize, z);
                     float hz = terrain.heightAt(x, z + c.cellSize) - terrain.heightAt(x, z - c.cellSize);
                     glm::vec3 nrm = glm::normalize(glm::vec3(-hx, 2.0f * c.cellSize, -hz));
-                    verts.insert(verts.end(), {x, h, z, nrm.x, nrm.y, nrm.z});
+                    verts.insert(verts.end(), {x, h, z, nrm.x, nrm.y, nrm.z, terrain.roadMaskAt(x, z)});
                     lo = std::fmin(lo, h); hi = std::fmax(hi, h);
                 }
             Chunk ch;
@@ -68,8 +68,9 @@ void TerrainRenderer::init(const Terrain &terrain)
             glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float), verts.data(), GL_STATIC_DRAW);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ch.ebo);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, idx.size() * sizeof(unsigned int), idx.data(), GL_STATIC_DRAW);
-            glEnableVertexAttribArray(0); glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
-            glEnableVertexAttribArray(1); glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+            glEnableVertexAttribArray(0); glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
+            glEnableVertexAttribArray(1); glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2); glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)(6 * sizeof(float)));
             glBindVertexArray(0);
             ch.indexCount = static_cast<GLsizei>(idx.size());
             ch.center = glm::vec3(ox + span * 0.5f, (lo + hi) * 0.5f, oz + span * 0.5f);
