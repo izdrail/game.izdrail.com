@@ -15,6 +15,8 @@
 #include "shader.h"
 #include "model.h"
 #include "skybox.h"
+#include "terrain.h"
+#include "terrain_renderer.h"
 
 class World
 {
@@ -29,6 +31,15 @@ public:
     glm::mat4 projection; // projection matrix
     // environment type
     std::string environmentType; // desert, snow, forest, night
+
+    /// Seed used for terrain and object placement (same seed => same world).
+    static uint64_t seed;
+    /// Shared terrain height field (single source of truth for rendering, collision and placement).
+    static const Terrain &terrain();
+    /// Ground height (world y) at x,z.
+    static float groundHeightAt(float x, float z);
+    /// Camera/eye y when standing at x,z (original game used eye y=0 on a ground at GROUND_Y).
+    static float eyeFloorAt(float x, float z);
 
     /// Default constructor; constructs a new world object (randomly chooses environment type).
     World();
@@ -71,7 +82,8 @@ private:
     std::vector<glm::vec3> surroundingPos; // flower/rock/pumpkin positions
     std::vector<float> groundVertices;     // ground vertex data
     unsigned int groundTexture;            // ground texture
-    unsigned int groundVAO, groundVBO;     // buffers for ground data
+    unsigned int groundVAO, groundVBO;     // buffers for ground data (legacy flat quad, unused)
+    TerrainRenderer terrainRenderer;       // chunked heightfield terrain
     unsigned int treeBuffer;               // buffer for tree models
     unsigned int surroundingBuffer;        // buffer for flower/rock models
     // matrix data (used for instancing)

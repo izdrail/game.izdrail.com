@@ -1,8 +1,29 @@
 #include "world.h"
 
-const unsigned int World::N_TREES = 20;
-const unsigned int World::N_SURROUNDINGS = 30;
-const float World::TERRAIN_SIZE = 60;
+const unsigned int World::N_TREES = 450;
+const unsigned int World::N_SURROUNDINGS = 350;
+const float World::TERRAIN_SIZE = 400;
+uint64_t World::seed = 1337;
+
+const Terrain &World::terrain()
+{
+    static TerrainConfig cfg;
+    static Terrain *t = nullptr;
+    static uint64_t builtFor = ~0ull;
+    if (!t || builtFor != seed)
+    {
+        cfg.seed = seed;
+        cfg.worldSize = TERRAIN_SIZE;
+        cfg.baseHeight = GROUND_Y;
+        delete t;
+        t = new Terrain(cfg);
+        builtFor = seed;
+    }
+    return *t;
+}
+float World::groundHeightAt(float x, float z) { return terrain().heightAt(x, z); }
+float World::eyeFloorAt(float x, float z) { return terrain().heightAt(x, z) - GROUND_Y; }
+
 const float World::GROUND_Y = -1.8f;
 
 World::World()
@@ -118,7 +139,9 @@ void World::setupWorld()
     std::vector<std::string> filenames = {"px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"};
     skybox = SkyBox(filenames, dirName);
 
-    // get ground vertex data and set up the buffers
+    terrainRenderer.init(terrain());
+
+    // legacy flat ground quad (no longer drawn)
     groundVertices = getGroundVertexData();
     glGenVertexArrays(1, &groundVAO);
     glGenBuffers(1, &groundVBO);
@@ -190,18 +213,11 @@ void World::drawTrees()
 
 void World::drawGround()
 {
-    // set uniforms and draw the ground
-    shaderGround.use();
-    shaderGround.setMat4("projection", projection);
-    shaderGround.setMat4("view", view);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, groundTexture);
-    glBindVertexArray(groundVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    // set everything back to default
-    glBindVertexArray(0);
-    glActiveTexture(GL_TEXTURE0);
+    glm::vec3 fog = environmentType == "night" ? glm::vec3(0.04f, 0.05f, 0.09f)
+                  : environmentType == "snow" ? glm::vec3(0.78f, 0.82f, 0.88f)
+                  : environmentType == "desert" ? glm::vec3(0.80f, 0.72f, 0.58f)
+                  : glm::vec3(0.62f, 0.70f, 0.78f);
+    terrainRenderer.draw(view, projection, groundTexture, fog, 0.0045f);
 }
 
 void World::drawSkyBox(bool grayscale)
@@ -288,45 +304,39 @@ std::vector<float> World::getGroundVertexData() const
     return v;
 }
 
+// Deterministic placement: rejects steep slopes and water, density follows a low-frequency moisture field
+// so trees clump into forests and leave open meadows. Keeps a clear area around the spawn point.
+static glm::vec3 pickPoint(std::mt19937_64 &gen, float margin, bool useMoisture, float maxSlope)
+{
+    std::uniform_real_distribution<float> xz(-World::TERRAIN_SIZE / 2 + margin, World::TERRAIN_SIZE / 2 - margin);
+    std::uniform_real_distribution<float> u(0.0f, 1.0f);
+    const Terrain &t = World::terrain();
+    for (int tries = 0; tries < 200; ++tries)
+    {
+        float x = xz(gen), z = xz(gen);
+        if (x * x + z * z < 12.0f * 12.0f) continue;
+        if (t.isWater(x, z) || t.slopeDegAt(x, z) > maxSlope) continue;
+        if (useMoisture && u(gen) > t.moistureAt(x, z) * t.moistureAt(x, z)) continue;
+        return {x, t.heightAt(x, z), z};
+    }
+    return {20.0f, t.heightAt(20.0f, 20.0f), 20.0f};
+}
+
 void World::createTreePositions()
 {
-    std::random_device rd;  // obtain a random number from hardware
-    std::mt19937 gen(rd()); // seed the generator
-
-    // define range for x and z axis
-    int a = (-TERRAIN_SIZE / 2) + 2;
-    int b = (TERRAIN_SIZE / 2) - 2;
-    std::uniform_int_distribution<> xzPlane(a, b);
-
-    // create random positions for trees
+    std::mt19937_64 gen(seed ^ 0x7265ull);
+    treePos.clear();
     for (unsigned int i = 0; i < N_TREES; i++)
-    {
-        float posX = xzPlane(gen);
-        float posZ = xzPlane(gen);
-        glm::vec3 vec = {posX, GROUND_Y, posZ};
-        treePos.push_back(vec);
-    }
+        treePos.push_back(pickPoint(gen, 4.0f, true, 32.0f));
 }
 
 void World::createSurroundingPositions()
 {
-    std::random_device rd;  // obtain a random number from hardware
-    std::mt19937 gen(rd()); // seed the generator
-
-    // define range for x and z axis
-    int a = (-TERRAIN_SIZE / 2) + 2;
-    int b = (TERRAIN_SIZE / 2) - 2;
-    std::uniform_int_distribution<> xzPlane(a, b);
-
-    // create random positions for surroundings
+    std::mt19937_64 gen(seed ^ 0x726Full);
+    surroundingPos.clear();
     for (unsigned int i = 0; i < N_SURROUNDINGS; i++)
     {
-        // generate positions until a unique position is found
-        glm::vec3 vec;
-        do
-        {
-            vec = {xzPlane(gen), GROUND_Y, xzPlane(gen)};
-        } while (std::find(treePos.begin(), treePos.end(), vec) != treePos.end());
+        glm::vec3 vec = pickPoint(gen, 4.0f, false, 45.0f);
 
         // adjust y value where needed (otherwise some models are too high/low)
         if (environmentType == "desert" or environmentType == "snow")
@@ -370,7 +380,7 @@ void World::createSurroundingModelMatrices()
     {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, surroundingPos[i]); // translation
-        float rotAngle = static_cast<float>((rand() % 360)); 
+        float rotAngle = static_cast<float>(((i * 2654435761u) ^ static_cast<unsigned>(seed)) % 360); 
         model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f)); // add (semi)random rotation
         if (environmentType == "desert" or environmentType == "snow")
         {

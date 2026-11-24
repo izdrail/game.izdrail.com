@@ -17,4 +17,6 @@ struct TerrainConfig
     float warpStrength = 30.0f;  // domain warp (m)
     float mountainBlend = 0.6f;  // 0 = rolling hills only, 1 = strong ridged mountains
     float waterLevel = -4.0f;    // height below which water is placed
+    float flatRadius = 18.0f;    // fully flat around the origin (player start)
+    float flatBlend = 60.0f;     // distance over which terrain rises to full height
 };
