@@ -175,6 +175,8 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     // in game (player can move and shoot)
     if (hasStarted && isAlive)
     {
+        // hold left shift to sprint (the world is large now)
+        MovementSpeed = SPEED * (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 3.0f : 1.0f);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
             isWalking = true;
@@ -345,7 +347,7 @@ void Player::drawGunFire()
 
 void Player::setProjectionMatrix()
 {
-    projection = glm::perspective(glm::radians(ZOOM), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(ZOOM), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.2f, 2500.0f);
 }
 
 void Player::setGunModelMatrix()
@@ -597,4 +599,11 @@ void Player::audioSetup()
         std::cout << "ERROR: failed to load walking sound." << std::endl;
     }
     ma_sound_set_looping(&walkingSound, true);
+}
+void Player::setSpawn(float x, float z, float yawDeg)
+{
+    Position = glm::vec3(x, World::eyeFloorAt(x, z), z);
+    origPosition = Position;
+    Yaw = yawDeg;
+    updatePlayerVectors();
 }

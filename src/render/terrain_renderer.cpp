@@ -1,10 +1,33 @@
 #include "terrain_renderer.h"
 #include <cmath>
+#include "texture_loading.h"
 
 void TerrainRenderer::init(const Terrain &terrain)
 {
     shader_ = Shader(ASSET_PATH "/shaders/terrain.vert", ASSET_PATH "/shaders/terrain.frag");
     const TerrainConfig &c = terrain.config();
+    // PBR-style material set: color (sRGB), normal (GL), roughness for grass, dirt, rock, snow
+    const char *mats[4] = {"grass", "dirt", "rock", "snow"};
+    for (int m = 0; m < 4; ++m)
+    {
+        std::string base = mats[m];
+        tex_[m * 3 + 0] = TextureFromFile((base + "_color.jpg").c_str(), ASSET_PATH "/resources/terrain", false, true);
+        tex_[m * 3 + 1] = TextureFromFile((base + "_normal.jpg").c_str(), ASSET_PATH "/resources/terrain", false, false);
+        tex_[m * 3 + 2] = TextureFromFile((base + "_rough.jpg").c_str(), ASSET_PATH "/resources/terrain", false, false);
+        for (int k = 0; k < 3; ++k)
+        {
+            glBindTexture(GL_TEXTURE_2D, tex_[m * 3 + k]);
+            // anisotropic filtering left at driver default
+        }
+    }
+    waterShader_ = Shader(ASSET_PATH "/shaders/water.vert", ASSET_PATH "/shaders/water.frag");
+    half_ = c.worldSize * 0.5f;
+    float q[] = {-half_, 0, -half_, half_, 0, -half_, half_, 0, half_, -half_, 0, -half_, half_, 0, half_, -half_, 0, half_};
+    glGenVertexArrays(1, &waterVao_); glGenBuffers(1, &waterVbo_);
+    glBindVertexArray(waterVao_); glBindBuffer(GL_ARRAY_BUFFER, waterVbo_);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(q), q, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0); glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glBindVertexArray(0);
     const int n = c.chunkCells + 1;
     const int per = terrain.chunksPerSide();
     const float span = c.chunkCells * c.cellSize;
@@ -55,8 +78,7 @@ void TerrainRenderer::init(const Terrain &terrain)
         }
 }
 
-void TerrainRenderer::draw(const glm::mat4 &view, const glm::mat4 &projection, unsigned int groundTexture,
-                           const glm::vec3 &fogColor, float fogDensity)
+void TerrainRenderer::draw(const glm::mat4 &view, const glm::mat4 &projection, const TerrainStyle &st)
 {
     // frustum planes (Gribb/Hartmann) for sphere culling
     glm::mat4 m = projection * view;
@@ -72,11 +94,22 @@ void TerrainRenderer::draw(const glm::mat4 &view, const glm::mat4 &projection, u
     shader_.setMat4("projection", projection);
     shader_.setMat4("view", view);
     shader_.setVec3("cameraPos", glm::vec3(glm::inverse(view)[3]));
-    shader_.setVec3("fogColor", fogColor);
-    shader_.setFloat("fogDensity", fogDensity);
-    shader_.setInt("groundTex", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, groundTexture);
+    shader_.setVec3("fogColor", st.fogColor);
+    shader_.setFloat("fogDensity", st.fogDensity);
+    shader_.setFloat("snowLine", st.snowLine);
+    shader_.setFloat("dryness", st.dryness);
+    shader_.setFloat("waterLevel", st.waterLevel);
+    shader_.setFloat("exposure", st.exposure);
+    shader_.setVec3("sunColor", st.sunColor);
+    shader_.setVec3("skyAmbient", st.skyAmbient);
+    shader_.setVec3("groundAmbient", st.groundAmbient);
+    static const char *names[12] = {"grassC", "grassN", "grassR", "dirtC", "dirtN", "dirtR", "rockC", "rockN", "rockR", "snowC", "snowN", "snowR"};
+    for (int i = 0; i < 12; ++i)
+    {
+        glActiveTexture(GL_TEXTURE0 + i);
+        glBindTexture(GL_TEXTURE_2D, tex_[i]);
+        shader_.setInt(names[i], i);
+    }
 
     lastDrawn_ = 0;
     for (const Chunk &c : chunks_)
@@ -90,4 +123,24 @@ void TerrainRenderer::draw(const glm::mat4 &view, const glm::mat4 &projection, u
         ++lastDrawn_;
     }
     glBindVertexArray(0);
+    glActiveTexture(GL_TEXTURE0);
+}
+
+void TerrainRenderer::drawWater(const glm::mat4 &view, const glm::mat4 &projection, const TerrainStyle &st, float time)
+{
+    waterShader_.use();
+    waterShader_.setMat4("projection", projection);
+    waterShader_.setMat4("view", view);
+    waterShader_.setFloat("level", st.waterLevel);
+    waterShader_.setFloat("time", time);
+    waterShader_.setVec3("cameraPos", glm::vec3(glm::inverse(view)[3]));
+    waterShader_.setVec3("fogColor", st.fogColor);
+    waterShader_.setFloat("fogDensity", st.fogDensity);
+    waterShader_.setVec3("sunColor", st.sunColor);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindVertexArray(waterVao_);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArray(0);
+    glDisable(GL_BLEND);
 }
