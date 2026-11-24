@@ -295,7 +295,7 @@ void Player::passiveMotion()
 {
     if (!isWalking)
     {
-        Position.y = sin(currentFrame * 2) * 0.02f;
+        Position.y = World::eyeFloorAt(Position.x, Position.z) + sin(currentFrame * 2) * 0.02f;
     }
 }
 
@@ -557,9 +557,10 @@ void Player::updatePhysics(float deltaTime)
     verticalVelocity -= gravity * deltaTime;
 
     // Ground check
-    if (Position.y < 0.0f)
+    float floorY = World::eyeFloorAt(Position.x, Position.z);
+    if (Position.y < floorY)
     {
-        Position.y = 0.0f;
+        Position.y = floorY;
         verticalVelocity = 0.0f;
         isJumping = false;
     }

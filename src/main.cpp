@@ -8,18 +8,32 @@
 #include "collision_detection.h"
 #include "text_renderer.h"
 
-int main()
+int main(int argc, char **argv)
 {
     // ask user for the type of environment
-    std::cout << "Choose the environment you want to play in (desert, forest, snow, night): ";
+    // options: --seed N, --env desert|forest|snow|night, --autostart
     std::string envType;
-    std::cin >> envType;
+    bool autostart = false;
+    for (int i = 1; i < argc; ++i)
+    {
+        std::string a = argv[i];
+        if (a == "--seed" && i + 1 < argc) World::seed = std::stoull(argv[++i]);
+        else if (a == "--env" && i + 1 < argc) envType = argv[++i];
+        else if (a == "--autostart") autostart = true;
+    }
+    if (envType.empty())
+    {
+        std::cout << "Choose the environment you want to play in (desert, forest, snow, night): ";
+        std::cin >> envType;
+    }
+    std::cout << "World seed: " << World::seed << std::endl;
 
     // initialize and configure glwf, load OpenGL function pointers and create window
     GLFWwindow *window = setup("Drone Shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
     // prepare game related objects
     Player player; 
+    if (autostart) player.hasStarted = true;
     World world(envType); // will choose env. type randomly if input is invalid
     EnemyManager manager;
     CollisionDetector detector;

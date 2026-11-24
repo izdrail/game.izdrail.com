@@ -52,7 +52,19 @@ float Terrain::heightAt(float x, float z) const
     float mask = 0.5f + 0.5f * valueNoise(c.seed ^ 0xD4, wx * c.frequency * 0.35f, wz * c.frequency * 0.35f);
     float m = mask * mask * c.mountainBlend;
     float h = hills * (1.0f - m) + (ridges * 1.4f - 0.2f) * m;
-    return c.baseHeight + h * c.heightScale;
+    float hgt = h * c.heightScale;
+    // keep the spawn area flat so the player starts on level ground
+    float d = std::sqrt(x * x + z * z);
+    float t = (d - c.flatRadius) / c.flatBlend;
+    t = t < 0 ? 0 : (t > 1 ? 1 : t);
+    hgt *= t * t * (3 - 2 * t);
+    return c.baseHeight + hgt;
+}
+
+float Terrain::moistureAt(float x, float z) const
+{
+    float m = 0.5f + 0.5f * fbm(cfg_, cfg_.seed ^ 0xE5, x * 1.7f + 200.f, z * 1.7f - 90.f, false) * 1.6f;
+    return m < 0 ? 0 : (m > 1 ? 1 : m);
 }
 
 float Terrain::slopeDegAt(float x, float z) const

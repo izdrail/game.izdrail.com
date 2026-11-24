@@ -15,6 +15,8 @@ public:
     float heightAt(float x, float z) const;
     // Surface slope in degrees (0 flat .. 90).
     float slopeDegAt(float x, float z) const;
+    // 0..1 vegetation density driver (low frequency, clumps forests/meadows).
+    float moistureAt(float x, float z) const;
     bool isWater(float x, float z) const { return heightAt(x, z) < cfg_.waterLevel; }
 
     // Fills (chunkCells+1)^2 heights for chunk (cx,cz); chunk 0,0 starts at -worldSize/2.

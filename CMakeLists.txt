@@ -26,6 +26,7 @@ set(SOURCE_FILES
     src/render/model.cpp
     src/render/shader.cpp
     src/render/skybox.cpp
+    src/render/terrain_renderer.cpp
     src/render/text_renderer.cpp
     src/render/texture_loading.cpp
     src/render/stb_image.cpp
@@ -39,6 +40,7 @@ target_include_directories(game PRIVATE
     src/core
     src/render
     src/audio
+    src/world
     include
 )
 

@@ -1,3 +1,5 @@
+#include <cmath>
+#include <algorithm>
 #include "enemy.h"
 
 const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
@@ -161,37 +163,17 @@ void Enemy::generatePosition()
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
 
-    std::uniform_int_distribution<> xzPlane(-World::TERRAIN_SIZE + 2, World::TERRAIN_SIZE - 2); // define the range for x and z axis
-    std::uniform_int_distribution<> yPlane(MIN_FLOAT_HEIGHT, MAX_FLOAT_HEIGHT);                 // define the range for y axis
+    std::uniform_real_distribution<float> angle(0.0f, 6.2831853f);
+    std::uniform_real_distribution<float> radius(30.0f, 70.0f); // ring around the player
+    std::uniform_int_distribution<> yPlane(MIN_FLOAT_HEIGHT, MAX_FLOAT_HEIGHT); // float height above the ground
 
-    float posX = xzPlane(gen); // generate x position
-    float posZ = xzPlane(gen); // generate z position
+    float a = angle(gen), r = radius(gen);
+    float limit = World::TERRAIN_SIZE / 2 - 2.0f;
+    float posX = std::max(-limit, std::min(limit, playerPosition.x + std::cos(a) * r));
+    float posZ = std::max(-limit, std::min(limit, playerPosition.z + std::sin(a) * r));
 
-    // add limitation: enemy can not spawn in the inner square of the terrain square
-    if (posX > -World::TERRAIN_SIZE / 2 && posX < World::TERRAIN_SIZE / 2)
-    {
-        if (posX < 0)
-        {
-            posX = -World::TERRAIN_SIZE / 2;
-        }
-        else
-        {
-            posX = World::TERRAIN_SIZE / 2;
-        }
-    }
-    if (posZ > -World::TERRAIN_SIZE / 2 && posZ < World::TERRAIN_SIZE / 2)
-    {
-        if (posZ < 0)
-        {
-            posZ = -World::TERRAIN_SIZE / 2;
-        }
-        else
-        {
-            posZ = World::TERRAIN_SIZE / 2;
-        }
-    }
-
-    position = glm::vec3(posX, yPlane(gen), posZ);
+    // y: ground eye level at this spot plus the float height
+    position = glm::vec3(posX, World::eyeFloorAt(posX, posZ) + yPlane(gen), posZ);
 }
 
 void Enemy::generateModelMatrix()
