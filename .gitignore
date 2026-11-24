@@ -7,3 +7,5 @@ build/
 # Large assets
 resources/models/trees/snow_land_tree/Tree_Red-spruce.obj
 resources/models/trees/snow_land_tree.zip
+dist/
+/game

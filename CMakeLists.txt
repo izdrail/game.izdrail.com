@@ -41,9 +41,11 @@ target_include_directories(game PRIVATE
     include
 )
 
-# Asset Path Definition
+# Asset Path Definition. Packaged builds pass -DGAME_ASSET_PATH=assets and are
+# started through run.sh / run.command, which cd into the package directory.
+set(GAME_ASSET_PATH "${CMAKE_SOURCE_DIR}/assets" CACHE STRING "Asset directory baked into the binary")
 target_compile_definitions(game PRIVATE
-    ASSET_PATH="${CMAKE_SOURCE_DIR}/assets"
+    ASSET_PATH="${GAME_ASSET_PATH}"
 )
 
 # Dependencies
