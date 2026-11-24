@@ -1,8 +1,9 @@
 #include "world.h"
+#include <GLFW/glfw3.h>
 
-const unsigned int World::N_TREES = 450;
-const unsigned int World::N_SURROUNDINGS = 350;
-const float World::TERRAIN_SIZE = 400;
+const unsigned int World::N_TREES = 1400;
+const unsigned int World::N_SURROUNDINGS = 700;
+const float World::TERRAIN_SIZE = 1200;
 uint64_t World::seed = 1337;
 
 const Terrain &World::terrain()
@@ -15,6 +16,15 @@ const Terrain &World::terrain()
         cfg.seed = seed;
         cfg.worldSize = TERRAIN_SIZE;
         cfg.baseHeight = GROUND_Y;
+        cfg.cellSize = 3.0f;
+        cfg.chunkCells = 40;          // 120 m chunks, 10x10
+        cfg.heightScale = 95.0f;      // dramatic relief
+        cfg.frequency = 0.0028f;
+        cfg.mountainBlend = 0.8f;
+        cfg.warpStrength = 60.0f;
+        cfg.flatRadius = 25.0f;
+        cfg.flatBlend = 140.0f;
+        cfg.waterLevel = GROUND_Y - 9.0f; // lakes/rivers fill the low valleys
         delete t;
         t = new Terrain(cfg);
         builtFor = seed;
@@ -213,11 +223,25 @@ void World::drawTrees()
 
 void World::drawGround()
 {
-    glm::vec3 fog = environmentType == "night" ? glm::vec3(0.04f, 0.05f, 0.09f)
-                  : environmentType == "snow" ? glm::vec3(0.78f, 0.82f, 0.88f)
-                  : environmentType == "desert" ? glm::vec3(0.80f, 0.72f, 0.58f)
-                  : glm::vec3(0.62f, 0.70f, 0.78f);
-    terrainRenderer.draw(view, projection, groundTexture, fog, 0.0045f);
+    TerrainStyle st;
+    st.waterLevel = terrain().config().waterLevel;
+    if (environmentType == "night")
+    {
+        st.fogColor = {0.03f, 0.04f, 0.08f}; st.sunColor = {0.22f, 0.28f, 0.45f};
+        st.skyAmbient = {0.04f, 0.06f, 0.12f}; st.groundAmbient = {0.02f, 0.02f, 0.03f}; st.exposure = 1.2f;
+    }
+    else if (environmentType == "snow")
+    {
+        st.fogColor = {0.78f, 0.82f, 0.88f}; st.snowLine = -30.0f; st.sunColor = {0.95f, 0.97f, 1.0f};
+        st.skyAmbient = {0.45f, 0.50f, 0.60f}; st.groundAmbient = {0.30f, 0.32f, 0.36f};
+    }
+    else if (environmentType == "desert")
+    {
+        st.fogColor = {0.80f, 0.72f, 0.58f}; st.dryness = 1.0f; st.snowLine = 500.0f;
+        st.sunColor = {1.0f, 0.88f, 0.68f}; st.skyAmbient = {0.45f, 0.40f, 0.34f}; st.groundAmbient = {0.30f, 0.22f, 0.14f};
+    }
+    terrainRenderer.draw(view, projection, st);
+    terrainRenderer.drawWater(view, projection, st, static_cast<float>(glfwGetTime()));
 }
 
 void World::drawSkyBox(bool grayscale)

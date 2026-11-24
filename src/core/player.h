@@ -92,6 +92,9 @@ public:
     Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     /// Destructor.
+    /// Dev/QA: move the start point (x,z on the terrain) and set yaw in degrees.
+    void setSpawn(float x, float z, float yawDeg);
+
     ~Player();
 
     /// Returns the view matrix calculated using Euler Angles and the LookAt Matrix.
