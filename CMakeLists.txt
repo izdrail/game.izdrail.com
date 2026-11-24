@@ -19,6 +19,7 @@ set(SOURCE_FILES
     src/core/player.cpp
     src/core/ray.cpp
     src/core/world.cpp
+    src/world/terrain.cpp
     src/render/glad.c
     src/render/hud.cpp
     src/render/mesh.cpp
@@ -100,3 +101,5 @@ set_target_properties(game PROPERTIES
 enable_testing()
 add_executable(test_math tests/test_math.cpp)
 add_test(NAME MathTest COMMAND test_math)
+add_executable(test_terrain tests/test_terrain.cpp src/world/terrain.cpp)
+add_test(NAME TerrainTest COMMAND test_terrain)
