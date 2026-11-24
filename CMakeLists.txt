@@ -112,3 +112,7 @@ add_executable(test_terrain tests/test_terrain.cpp src/world/terrain.cpp src/wor
 add_test(NAME TerrainTest COMMAND test_terrain)
 add_executable(test_roads tests/test_roads.cpp src/world/terrain.cpp src/world/roads.cpp src/world/outpost_layout.cpp)
 add_test(NAME RoadsTest COMMAND test_roads)
+
+add_executable(test_weapons tests/test_weapons.cpp src/data/json_mini.cpp src/data/weapons.cpp)
+target_compile_definitions(test_weapons PRIVATE WEAPONS_JSON="${CMAKE_SOURCE_DIR}/assets/data/weapons.json")
+add_test(NAME WeaponsTest COMMAND test_weapons)
