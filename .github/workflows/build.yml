@@ -49,31 +49,5 @@ jobs:
       - name: Summary
         run: echo "Artifact game-linux-x86_64 (commit $GITHUB_SHA) is attached to this run." >> "$GITHUB_STEP_SUMMARY"
 
-  macos-arm64:
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: brew install cmake glfw assimp freetype pkg-config
-      - name: Configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DGAME_ASSET_PATH=assets
-      - name: Build
-        run: cmake --build build -j"$(sysctl -n hw.ncpu)"
-      - name: Test
-        run: ctest --test-dir build --output-on-failure
-      - name: Package
-        run: scripts/package.sh game-macos-arm64 game
-      - name: Verify package extracts
-        run: |
-          rm -rf /tmp/pkgcheck && mkdir /tmp/pkgcheck
-          tar -xzf dist/game-macos-arm64.tar.gz -C /tmp/pkgcheck
-          test -x /tmp/pkgcheck/game-macos-arm64/game
-          test -d /tmp/pkgcheck/game-macos-arm64/assets/shaders
-      - uses: actions/upload-artifact@v4
-        with:
-          name: game-macos-arm64
-          path: dist/game-macos-arm64.tar.gz
-          retention-days: 14
-          if-no-files-found: error
-      - name: Summary
-        run: echo "Artifact game-macos-arm64 (commit $GITHUB_SHA) is attached to this run." >> "$GITHUB_STEP_SUMMARY"
+  # macOS arm64 job removed: GitHub could not allocate a macos-14 runner for this repo
+  # (job cancelled in 1s with no steps). Re-add once a macOS runner is available.
