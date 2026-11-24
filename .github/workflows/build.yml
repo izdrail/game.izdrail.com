@@ -9,13 +9,13 @@ on:
 
 jobs:
   linux-x86_64:
-    runs-on: self-hosted   # project CI rule: self-hosted runner
+    runs-on: ubuntu-latest   # GitHub-hosted for now; self-hosted Predator runner is down
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake g++ pkg-config libglfw3-dev libassimp-dev libfreetype6-dev libgl1-mesa-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+          sudo apt-get install -y cmake g++ pkg-config libglfw3-dev libassimp-dev libfreetype6-dev libgl1-mesa-dev libgl1-mesa-dri xvfb libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DGAME_ASSET_PATH=assets
       - name: Build
@@ -30,7 +30,16 @@ jobs:
           tar -xzf dist/game-linux-x86_64.tar.gz -C /tmp/pkgcheck
           test -x /tmp/pkgcheck/game-linux-x86_64/game
           test -d /tmp/pkgcheck/game-linux-x86_64/assets/shaders
-          ldd /tmp/pkgcheck/game-linux-x86_64/game | grep -q "not found" && { echo "missing shared libs"; exit 1; } || true
+          if ldd /tmp/pkgcheck/game-linux-x86_64/game | grep -q "not found"; then echo "missing shared libs"; exit 1; fi
+      - name: Smoke test packaged game (xvfb + software GL)
+        run: |
+          cd /tmp/pkgcheck/game-linux-x86_64
+          set +e
+          echo forest | LIBGL_ALWAYS_SOFTWARE=1 timeout 15 xvfb-run -a -s "-screen 0 1280x720x24" ./run.sh > smoke.log 2>&1
+          code=$?
+          cat smoke.log | head -30
+          # 124 = still running when the timeout hit = started fine
+          if [ "$code" -ne 124 ]; then echo "game exited early with code $code"; exit 1; fi
       - uses: actions/upload-artifact@v4
         with:
           name: game-linux-x86_64
