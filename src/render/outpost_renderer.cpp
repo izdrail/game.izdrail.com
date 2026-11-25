@@ -1,7 +1,7 @@
 #include "outpost_renderer.h"
 #include <cmath>
 
-void OutpostRenderer::init(const std::vector<OutpostBox> &boxes)
+void OutpostRenderer::init(const std::vector<OutpostBox> &boxes, const std::vector<float> &extra)
 {
     shader_ = Shader(ASSET_PATH "/shaders/outpost.vert", ASSET_PATH "/shaders/outpost.frag");
     boxCount_ = boxes.size();
@@ -42,6 +42,7 @@ void OutpostRenderer::init(const std::vector<OutpostBox> &boxes)
             }
         }
     }
+    v.insert(v.end(), extra.begin(), extra.end());
     count_ = static_cast<GLsizei>(v.size() / 9);
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);

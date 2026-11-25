@@ -55,12 +55,30 @@ void buildOutpostBoxes(const Outpost &o, std::vector<OutpostBox> &out)
     // sandbag cover behind the gate, supply crates, fuel drums
     f.box(9.0f, 0, -3.5f, 1.0f, 1.1f, 4.5f, 0.2f, 0.45f, 0.38f, 0.26f);
     f.box(9.0f, 0, 3.5f, 1.0f, 1.1f, 4.5f, -0.2f, 0.45f, 0.38f, 0.26f);
-    f.box(4.0f, 0, 6.0f, 1.4f, 1.0f, 1.4f, 0.3f, 0.35f, 0.28f, 0.16f);
-    f.box(5.6f, 0, 6.4f, 1.2f, 0.8f, 1.2f, -0.2f, 0.33f, 0.26f, 0.15f);
-    f.box(4.5f, 0.8f, 6.1f, 1.0f, 0.7f, 1.0f, 0.1f, 0.36f, 0.30f, 0.18f);
-    f.box(3.0f, 0, -6.5f, 0.7f, 1.0f, 0.7f, 0, 0.25f, 0.12f, 0.08f);
-    f.box(3.9f, 0, -6.3f, 0.7f, 1.0f, 0.7f, 0, 0.12f, 0.20f, 0.12f);
     // flag pole
     f.box(2.0f, 0, 0, 0.18f, 9.0f, 0.18f, 0, 0.55f, 0.55f, 0.55f);
     f.box(2.0f, 7.6f, 0.9f, 0.05f, 1.1f, 1.7f, 0, 0.55f, 0.08f, 0.06f);
+}
+
+void buildOutpostProps(const Outpost &o, std::vector<OutpostProp> &out)
+{
+    const float c = std::cos(o.yaw), s = std::sin(o.yaw);
+    auto put = [&](const char *file, float h, float lx, float lz, float yaw, float r = 1, float g = 1, float b = 1) {
+        out.push_back({file, h, o.x + lx * c - lz * s, o.padHeight, o.z + lx * s + lz * c, -(o.yaw + yaw), r, g, b});
+    };
+    // supply crates and drums (replace the old box placeholders)
+    put("k-survival-box-large.glb", 1.1f, 4.0f, 6.0f, 0.3f, 0.42f, 0.32f, 0.18f);
+    put("k-survival-box-large.glb", 1.1f, 5.6f, 6.4f, -0.2f, 0.42f, 0.32f, 0.18f);
+    put("k-survival-box.glb", 0.8f, 4.6f, 6.1f, 0.1f, 0.42f, 0.32f, 0.18f);
+    put("k-survival-barrel.glb", 1.1f, 3.0f, -6.5f, 0.0f, 0.22f, 0.30f, 0.18f);
+    put("k-survival-barrel.glb", 1.1f, 3.9f, -6.3f, 0.7f, 0.22f, 0.30f, 0.18f);
+    put("k-survival-barrel.glb", 1.1f, 3.4f, -7.4f, 1.4f, 0.22f, 0.30f, 0.18f);
+    // a truck parked in the yard, tents beside the barracks, road barriers at the gate
+    put("k-car-truck.glb", 3.0f, 8.0f, -12.0f, 1.5708f, 0.28f, 0.33f, 0.22f);
+    put("k-survival-tent.glb", 2.6f, 5.0f, 14.5f, 0.0f, 0.36f, 0.38f, 0.26f);
+    put("k-survival-tent.glb", 2.6f, 0.0f, 16.0f, 0.0f, 0.36f, 0.38f, 0.26f);
+    put("k-racing-barrierred.glb", 1.0f, 15.0f, -3.5f, 1.5708f);
+    put("k-racing-barrierred.glb", 1.0f, 15.0f, 3.5f, 1.5708f);
+    put("k-car-cone.glb", 0.6f, 16.5f, -1.8f, 0.0f, 0.95f, 0.38f, 0.06f);
+    put("k-car-cone.glb", 0.6f, 16.5f, 1.8f, 0.0f, 0.95f, 0.38f, 0.06f);
 }

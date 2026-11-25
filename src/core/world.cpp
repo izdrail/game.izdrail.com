@@ -1,5 +1,6 @@
 #include "world.h"
 #include <GLFW/glfw3.h>
+#include "prop_library.h"
 
 const unsigned int World::N_TREES = 1400;
 const unsigned int World::N_SURROUNDINGS = 700;
@@ -163,7 +164,16 @@ void World::setupWorld()
     {
         std::vector<OutpostBox> boxes;
         for (const Outpost &o : roads().outposts()) buildOutpostBoxes(o, boxes);
-        outpostRenderer.init(boxes);
+        std::vector<float> propVerts;
+        PropLibrary props;
+        for (const Outpost &o : roads().outposts())
+        {
+            std::vector<OutpostProp> list;
+            buildOutpostProps(o, list);
+            for (const OutpostProp &p : list)
+                props.bake(std::string(ASSET_PATH "/resources/props/") + p.file, p.height, p.x, p.y, p.z, p.yaw, propVerts, p.r, p.g, p.b);
+        }
+        outpostRenderer.init(boxes, propVerts);
     }
 
     // legacy flat ground quad (no longer drawn)
