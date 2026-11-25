@@ -198,6 +198,8 @@ bool Player::isReloading() const { return !weapons.empty() && weapons[curWeapon]
 
 void Player::processInput(GLFWwindow *window, float deltaTime)
 {
+    if (weaponTourSeconds > 0.0f && !weapons.empty())
+        switchWeapon(static_cast<size_t>(glfwGetTime() / weaponTourSeconds) % weapons.size()); // debug: step through every weapon
     fired = false;
     ensureWeapons();
 
