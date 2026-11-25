@@ -104,7 +104,8 @@ public:
     /// Destructor.
     /// Dev/QA: move the start point (x,z on the terrain) and set yaw in degrees.
     void setSpawn(float x, float z, float yawDeg, float pitchDeg = 0.0f);
-    void setWeaponTour(float seconds) { weaponTourSeconds = seconds; }
+    void setWeaponTour(float seconds, size_t start = 0) { weaponTourSeconds = seconds; weaponTourStart = start; }
+    size_t weaponTourStart = 0;
 
     ~Player();
 
