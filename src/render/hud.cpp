@@ -73,6 +73,15 @@ void inGameScreen(TextRenderer &tr, Player &player)
         tr.RenderText(health, 348.0f * xScale, 540.0f * yScale, 0.5f * textScale, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
+    // weapon name and ammo (bottom left)
+    if (const WeaponDef *w = player.currentWeapon())
+    {
+        std::string ammo = player.isReloading() ? "Reloading" : (std::to_string(player.currentAmmo()) + "  /  " + std::to_string(player.currentReserve()));
+        glm::vec3 col = (player.currentAmmo() == 0 && !player.isReloading()) ? glm::vec3(0.7f, 0.0f, 0.1f) : glm::vec3(1.0f, 1.0f, 1.0f);
+        tr.RenderText(w->name, 20.0f * xScale, 60.0f * yScale, 0.5f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
+        tr.RenderText(ammo, 20.0f * xScale, 30.0f * yScale, 0.6f * textScale, col);
+    }
+
     // cross hairs
     float textSize = 0.3f * textScale;
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);

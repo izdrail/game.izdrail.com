@@ -1,4 +1,5 @@
 #include "player.h"
+#include <cstdio>
 
 // screen dimensions
 const int Player::SCR_HEIGHT = 1024;
@@ -163,8 +164,42 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
     }
 }
 
+static const WeaponDatabase &weaponDb()
+{
+    static WeaponDatabase db = []() {
+        try { return WeaponDatabase::fromFile(ASSET_PATH "/data/weapons.json"); }
+        catch (const std::exception &e) { std::fprintf(stderr, "weapons.json: %s\n", e.what()); return WeaponDatabase(); }
+    }();
+    return db;
+}
+
+void Player::ensureWeapons()
+{
+    if (weaponsReady) return;
+    weaponsReady = true;
+    const WeaponDatabase &db = weaponDb();
+    weapons.reserve(db.size());
+    for (const WeaponDef &d : db.all()) weapons.emplace_back(d);
+    // start with the M9 pistol (matches the pistol model that is drawn)
+    for (size_t i = 0; i < weapons.size(); ++i) if (weapons[i].def().id == "m9") curWeapon = i;
+}
+
+void Player::switchWeapon(size_t idx)
+{
+    if (weapons.empty() || idx == curWeapon || idx >= weapons.size()) return;
+    weapons[curWeapon].cancel();
+    curWeapon = idx;
+}
+
+const WeaponDef *Player::currentWeapon() const { return weapons.empty() ? nullptr : &weapons[curWeapon].def(); }
+int Player::currentAmmo() const { return weapons.empty() ? 0 : weapons[curWeapon].magazine(); }
+int Player::currentReserve() const { return weapons.empty() ? 0 : weapons[curWeapon].reserve(); }
+bool Player::isReloading() const { return !weapons.empty() && weapons[curWeapon].reloading(); }
+
 void Player::processInput(GLFWwindow *window, float deltaTime)
 {
+    fired = false;
+    ensureWeapons();
 
     // close window on ESC
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -176,7 +211,7 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     if (hasStarted && isAlive)
     {
         // hold left shift to sprint (the world is large now)
-        MovementSpeed = SPEED * (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 3.0f : 1.0f);
+        MovementSpeed = SPEED * (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 3.0f : 1.0f) * (weapons.empty() ? 1.0f : weapons[curWeapon].def().moveSpeedMul);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
             isWalking = true;
@@ -203,14 +238,36 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
             ProcessKeyboard(RIGHT, deltaTime);
         }
 
-        // player shoots gun
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) 
+        // weapon selection: 1-9 pick directly, Q / E cycle through the whole arsenal, R reloads
+        if (!weapons.empty())
+        {
+            for (int k = 0; k < 9; ++k)
+                if (glfwGetKey(window, GLFW_KEY_1 + k) == GLFW_PRESS) switchWeapon(static_cast<size_t>(k));
+            bool q = glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS, e = glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS;
+            if (q && !prevQ) switchWeapon((curWeapon + weapons.size() - 1) % weapons.size());
+            if (e && !prevE) switchWeapon((curWeapon + 1) % weapons.size());
+            prevQ = q; prevE = e;
+            if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) weapons[curWeapon].startReload();
+
+            // player shoots gun: fire rate, ammo, reload and fire mode come from the weapon data
+            bool trigger = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+            if (weapons[curWeapon].update(deltaTime, trigger) > 0)
+            {
+                fired = true;
+                shot = true;
+                range = weapons[curWeapon].def().range;
+                ma_engine_set_volume(&engine, 2.0);
+                ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL);
+            }
+        }
+        else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) // weapons.json missing: legacy behaviour
         {
             if (soundCount == 0)
             {
                 soundCount++;
                 ma_engine_set_volume(&engine, 2.0);
-                ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
+                ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL);
+                fired = true;
             }
             shot = true;
         }
@@ -536,6 +593,9 @@ void Player::processKeyboardMouse(GLFWwindow *window, float deltaTime)
 void Player::resetAll()
 {
     angle = 0;
+    weapons.clear();
+    weaponsReady = false;
+    curWeapon = 0;
     soundCount = 0;
     shot = false;
     startRecoil = false;
