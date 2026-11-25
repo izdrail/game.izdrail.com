@@ -14,3 +14,6 @@ Outpost buildings are procedural placeholder boxes (no external assets); roads u
 
 ## Weapon models (assets/resources/weapons/*.glb)
 - Quaternius "Ultimate Guns Pack" and Kenney weapon models, CC0, collected in https://github.com/Touhid-HZ/shooter-asset-library
+
+## Outpost props (assets/resources/props/*.glb)
+- Kenney survival kit, car kit and racing kit models, CC0, via https://github.com/Touhid-HZ/shooter-asset-library

@@ -10,7 +10,8 @@
 class OutpostRenderer
 {
 public:
-    void init(const std::vector<OutpostBox> &boxes);
+    // extra pre-baked triangles (position, normal, colour) drawn together with the boxes
+    void init(const std::vector<OutpostBox> &boxes, const std::vector<float> &extra = {});
     void draw(const glm::mat4 &view, const glm::mat4 &projection, const TerrainStyle &style);
     size_t boxCount() const { return boxCount_; }
 
