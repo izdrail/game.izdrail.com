@@ -373,10 +373,36 @@ void Player::walkingMotion()
     gunModelMatrix[3] = glm::vec4(gunPosition, 1.0);
 }
 
+const WeaponModel *Player::modelForCurrentWeapon()
+{
+    const WeaponDef *w = currentWeapon();
+    if (!w || w->model.empty()) return nullptr;
+    auto it = weaponModels.find(w->id);
+    if (it == weaponModels.end())
+    {
+        if (!weaponShaderReady)
+        {
+            weaponShader = Shader(ASSET_PATH "/shaders/weapon.vert", ASSET_PATH "/shaders/weapon.frag");
+            weaponShaderReady = true;
+        }
+        WeaponModel m;
+        m.load(std::string(ASSET_PATH "/resources/weapons/") + w->model, w->modelLength); // stays invalid on failure
+        it = weaponModels.emplace(w->id, std::move(m)).first;
+    }
+    return it->second.valid() ? &it->second : nullptr;
+}
+
 void Player::drawGun()
 {
     // depth test
     glEnable(GL_DEPTH_TEST);
+    if (const WeaponModel *wm = modelForCurrentWeapon())
+    {
+        // model +X is the barrel; the gun frame has the barrel along +Z (Front)
+        glm::mat4 m = glm::rotate(gunModelMatrix, glm::radians(-90.0f), glm::vec3(0, 1, 0));
+        wm->draw(weaponShader, m, viewLocalMat, projection);
+        return;
+    }
     
     // set uniforms and draw gun
     shader.use();
@@ -391,6 +417,7 @@ void Player::drawGun()
 
 void Player::drawGunFire()
 {
+    if (modelForCurrentWeapon()) return; // the muzzle flash mesh belongs to the legacy pistol model
     // depth test
     glEnable(GL_DEPTH_TEST);
 

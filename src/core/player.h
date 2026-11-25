@@ -16,6 +16,8 @@
 #include "miniaudio.h"
 #include <vector>
 #include "weapon_state.h"
+#include "weapon_model.h"
+#include <map>
 
 class Player
 {
@@ -153,6 +155,11 @@ private:
     bool prevQ = false, prevE = false, weaponsReady = false;
     void ensureWeapons();
     void switchWeapon(size_t idx);
+    // first-person weapon meshes (loaded on first use) and their shader
+    std::map<std::string, WeaponModel> weaponModels;
+    Shader weaponShader;
+    bool weaponShaderReady = false;
+    const WeaponModel *modelForCurrentWeapon();
     // gun related
     Model gun;                // gun model
     Shader shader;            // gun shader

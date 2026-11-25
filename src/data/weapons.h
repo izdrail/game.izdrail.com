@@ -30,6 +30,7 @@ struct WeaponDef
     std::string model;            // glTF/OBJ path relative to assets/resources/weapons ("" = placeholder)
     std::string sound;            // fire sound (relative to assets/resources/audio)
     float modelScale = 1.0f;
+    float modelLength = 1.5f;     // first-person length in gun-matrix units
 
     float secondsBetweenShots() const { return 60.0f / roundsPerMinute; }
     // Damage multiplier at distance d (linear falloff to minFalloff at range).
