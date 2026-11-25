@@ -58,7 +58,7 @@ void inGameScreen(TextRenderer &tr, Player &player)
     float textScale = std::min(xScale, yScale);
 
     // kill count
-    tr.RenderText(kill, 365.0f * xScale, 565.0f * yScale, 0.5f * textScale, glm::vec3(0.0f, 0.0f, 0.0f));
+    tr.RenderText(kill, 365.0f * xScale, 565.0f * yScale, 0.5f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // player's health: add blinking effect and red color if it gets low
     if (playerHealth <= 20)
@@ -70,7 +70,7 @@ void inGameScreen(TextRenderer &tr, Player &player)
     }
     else
     {
-        tr.RenderText(health, 348.0f * xScale, 540.0f * yScale, 0.5f * textScale, glm::vec3(0.0f, 0.0f, 0.0f));
+        tr.RenderText(health, 348.0f * xScale, 540.0f * yScale, 0.5f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     // weapon name and ammo (bottom left)

@@ -1,4 +1,5 @@
 #include "text_renderer.h"
+#include <algorithm>
 
 TextRenderer::TextRenderer(std::string pathToFont, std::string pathVertexShader, std::string pathFragmentShader)
 {
@@ -28,6 +29,23 @@ TextRenderer::TextRenderer(std::string pathToFont, std::string pathVertexShader,
 }
 
 void TextRenderer::RenderText(std::string_view text, float x, float y, float scale, glm::vec3 color)
+{
+    // thin contrasting outline so text stays readable on any background (dark text gets a light
+    // outline, light text a dark one)
+    float lum = 0.2126f * color.x + 0.7152f * color.y + 0.0722f * color.z;
+    glm::vec3 outline = lum > 0.45f ? glm::vec3(0.0f) : glm::vec3(1.0f);
+    float d = std::max(1.2f, 2.5f * scale);
+    static const float dirs[8][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {0.7f, 0.7f}, {-0.7f, 0.7f}, {0.7f, -0.7f}, {-0.7f, -0.7f}};
+    // passes share the same depth, so let equal depth through
+    GLint prevFunc;
+    glGetIntegerv(GL_DEPTH_FUNC, &prevFunc);
+    glDepthFunc(GL_ALWAYS);
+    for (const auto &o : dirs) drawText(text, x + o[0] * d, y + o[1] * d, scale, outline);
+    drawText(text, x, y, scale, color);
+    glDepthFunc(prevFunc);
+}
+
+void TextRenderer::drawText(std::string_view text, float x, float y, float scale, glm::vec3 color)
 {
     // set OpenGL state
     glEnable(GL_BLEND);

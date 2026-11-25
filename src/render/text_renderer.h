@@ -61,6 +61,8 @@ public:
      * @param color color of text.
      */
     void RenderText(std::string_view text, float x, float y, float scale, glm::vec3 color);
+    /// Single pass without outline.
+    void drawText(std::string_view text, float x, float y, float scale, glm::vec3 color);
 
 private:
     std::string font;          // path to font
