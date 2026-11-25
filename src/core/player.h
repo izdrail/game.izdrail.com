@@ -16,6 +16,8 @@
 #include "miniaudio.h"
 #include <vector>
 #include "weapon_state.h"
+#include "weapon_model.h"
+#include <map>
 
 class Player
 {
@@ -102,6 +104,7 @@ public:
     /// Destructor.
     /// Dev/QA: move the start point (x,z on the terrain) and set yaw in degrees.
     void setSpawn(float x, float z, float yawDeg, float pitchDeg = 0.0f);
+    void setWeaponTour(float seconds) { weaponTourSeconds = seconds; }
 
     ~Player();
 
@@ -153,6 +156,12 @@ private:
     bool prevQ = false, prevE = false, weaponsReady = false;
     void ensureWeapons();
     void switchWeapon(size_t idx);
+    float weaponTourSeconds = 0.0f; // debug: cycle weapons automatically when > 0
+    // first-person weapon meshes (loaded on first use) and their shader
+    std::map<std::string, WeaponModel> weaponModels;
+    Shader weaponShader;
+    bool weaponShaderReady = false;
+    const WeaponModel *modelForCurrentWeapon();
     // gun related
     Model gun;                // gun model
     Shader shader;            // gun shader

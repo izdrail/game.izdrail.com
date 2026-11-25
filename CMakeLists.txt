@@ -33,6 +33,7 @@ set(SOURCE_FILES
     src/render/skybox.cpp
     src/render/terrain_renderer.cpp
     src/render/outpost_renderer.cpp
+    src/render/weapon_model.cpp
     src/render/text_renderer.cpp
     src/render/texture_loading.cpp
     src/render/stb_image.cpp

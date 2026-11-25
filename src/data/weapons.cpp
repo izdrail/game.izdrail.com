@@ -65,6 +65,7 @@ WeaponDatabase WeaponDatabase::fromJson(const std::string &text)
         d.model = w.string("model");
         d.sound = w.string("sound");
         d.modelScale = static_cast<float>(w.number("scale", 1.0));
+        d.modelLength = static_cast<float>(w.number("modelLength", d.modelLength));
         if (d.damage <= 0 || d.pellets < 1 || d.roundsPerMinute <= 0 || d.magazine < 1 || d.reloadSec <= 0 || d.range <= 0 ||
             d.minFalloff < 0 || d.minFalloff > 1 || d.adsZoom < 1.0f || d.moveSpeedMul <= 0 || d.reserve < 0)
             throw std::runtime_error("weapon " + d.id + ": value out of range");

@@ -17,7 +17,9 @@
    "velocity": 380,
    "zoom": 1.2,
    "moveSpeed": 1.0,
-   "weight": 1.0
+   "weight": 1.0,
+   "model": "q-guns50-pistol-1.glb",
+   "modelLength": 0.9
   },
   {
    "id": "glock17",
@@ -36,7 +38,9 @@
    "velocity": 375,
    "zoom": 1.2,
    "moveSpeed": 1.0,
-   "weight": 0.9
+   "weight": 0.9,
+   "model": "q-guns50-pistol-3.glb",
+   "modelLength": 0.9
   },
   {
    "id": "deagle",
@@ -55,7 +59,9 @@
    "velocity": 470,
    "zoom": 1.2,
    "moveSpeed": 0.98,
-   "weight": 1.9
+   "weight": 1.9,
+   "model": "q-guns50-pistol-6.glb",
+   "modelLength": 0.9
   },
   {
    "id": "revolver357",
@@ -74,7 +80,9 @@
    "velocity": 440,
    "zoom": 1.2,
    "moveSpeed": 1.0,
-   "weight": 1.2
+   "weight": 1.2,
+   "model": "q-guns50-revolver-1.glb",
+   "modelLength": 0.9
   },
   {
    "id": "mp5",
@@ -93,7 +101,9 @@
    "velocity": 400,
    "zoom": 1.3,
    "moveSpeed": 0.97,
-   "weight": 2.5
+   "weight": 2.5,
+   "model": "q-guns50-submachinegun-1.glb",
+   "modelLength": 1.3
   },
   {
    "id": "uzi",
@@ -112,7 +122,9 @@
    "velocity": 400,
    "zoom": 1.2,
    "moveSpeed": 0.98,
-   "weight": 3.5
+   "weight": 3.5,
+   "model": "q-guns50-submachinegun-2.glb",
+   "modelLength": 1.3
   },
   {
    "id": "p90",
@@ -131,7 +143,9 @@
    "velocity": 715,
    "zoom": 1.4,
    "moveSpeed": 0.97,
-   "weight": 2.6
+   "weight": 2.6,
+   "model": "q-guns50-bullpup-2.glb",
+   "modelLength": 1.3
   },
   {
    "id": "vector",
@@ -150,7 +164,9 @@
    "velocity": 300,
    "zoom": 1.3,
    "moveSpeed": 0.97,
-   "weight": 2.7
+   "weight": 2.7,
+   "model": "q-guns50-submachinegun-5.glb",
+   "modelLength": 1.3
   },
   {
    "id": "ak47",
@@ -169,7 +185,9 @@
    "velocity": 715,
    "zoom": 1.4,
    "moveSpeed": 0.93,
-   "weight": 3.8
+   "weight": 3.8,
+   "model": "q-guns50-assaultrifle-2.glb",
+   "modelLength": 1.9
   },
   {
    "id": "m4a1",
@@ -188,7 +206,9 @@
    "velocity": 880,
    "zoom": 1.5,
    "moveSpeed": 0.95,
-   "weight": 3.4
+   "weight": 3.4,
+   "model": "q-guns50-assaultrifle2-1.glb",
+   "modelLength": 1.9
   },
   {
    "id": "scar",
@@ -207,7 +227,9 @@
    "velocity": 730,
    "zoom": 1.5,
    "moveSpeed": 0.93,
-   "weight": 3.9
+   "weight": 3.9,
+   "model": "q-guns50-assaultrifle2-2.glb",
+   "modelLength": 1.9
   },
   {
    "id": "g36",
@@ -226,7 +248,9 @@
    "velocity": 920,
    "zoom": 1.5,
    "moveSpeed": 0.95,
-   "weight": 2.8
+   "weight": 2.8,
+   "model": "q-guns50-assaultrifle-4.glb",
+   "modelLength": 1.9
   },
   {
    "id": "famas",
@@ -246,7 +270,9 @@
    "zoom": 1.4,
    "moveSpeed": 0.95,
    "weight": 3.6,
-   "burst": 3
+   "burst": 3,
+   "model": "q-guns50-bullpup-1.glb",
+   "modelLength": 1.9
   },
   {
    "id": "m16",
@@ -266,7 +292,9 @@
    "zoom": 1.5,
    "moveSpeed": 0.94,
    "weight": 3.9,
-   "burst": 3
+   "burst": 3,
+   "model": "q-guns50-assaultrifle2-3.glb",
+   "modelLength": 1.9
   },
   {
    "id": "remington870",
@@ -287,7 +315,9 @@
    "moveSpeed": 0.95,
    "weight": 3.6,
    "pellets": 9,
-   "minFalloff": 0.15
+   "minFalloff": 0.15,
+   "model": "q-guns50-shotgun-1.glb",
+   "modelLength": 2.1
   },
   {
    "id": "spas12",
@@ -308,7 +338,9 @@
    "moveSpeed": 0.94,
    "weight": 4.4,
    "pellets": 9,
-   "minFalloff": 0.15
+   "minFalloff": 0.15,
+   "model": "q-guns50-shotgun-3.glb",
+   "modelLength": 2.1
   },
   {
    "id": "aa12",
@@ -329,7 +361,9 @@
    "moveSpeed": 0.9,
    "weight": 5.2,
    "pellets": 8,
-   "minFalloff": 0.15
+   "minFalloff": 0.15,
+   "model": "q-guns50-shotgun-shortstock.glb",
+   "modelLength": 2.1
   },
   {
    "id": "m24",
@@ -349,7 +383,9 @@
    "zoom": 4.0,
    "moveSpeed": 0.88,
    "weight": 5.5,
-   "minFalloff": 0.7
+   "minFalloff": 0.7,
+   "model": "q-guns50-sniperrifle-1.glb",
+   "modelLength": 2.5
   },
   {
    "id": "barrett",
@@ -369,7 +405,9 @@
    "zoom": 5.0,
    "moveSpeed": 0.82,
    "weight": 13.0,
-   "minFalloff": 0.75
+   "minFalloff": 0.75,
+   "model": "q-guns50-sniperrifle-3.glb",
+   "modelLength": 2.5
   },
   {
    "id": "dragunov",
@@ -389,7 +427,9 @@
    "zoom": 3.5,
    "moveSpeed": 0.9,
    "weight": 4.3,
-   "minFalloff": 0.65
+   "minFalloff": 0.65,
+   "model": "q-guns50-sniperrifle-5.glb",
+   "modelLength": 2.5
   },
   {
    "id": "m249",
@@ -408,7 +448,9 @@
    "velocity": 915,
    "zoom": 1.3,
    "moveSpeed": 0.82,
-   "weight": 7.5
+   "weight": 7.5,
+   "model": "q-guns50-assaultrifle-1.glb",
+   "modelLength": 1.1
   },
   {
    "id": "pkm",
@@ -427,7 +469,9 @@
    "velocity": 825,
    "zoom": 1.3,
    "moveSpeed": 0.8,
-   "weight": 8.4
+   "weight": 8.4,
+   "model": "q-guns50-assaultrifle-5.glb",
+   "modelLength": 2.2
   },
   {
    "id": "rpg7",
@@ -447,7 +491,9 @@
    "zoom": 1.8,
    "moveSpeed": 0.85,
    "weight": 6.3,
-   "minFalloff": 1.0
+   "minFalloff": 1.0,
+   "model": "k-weapon-rocketlauncher.glb",
+   "modelLength": 2.3
   },
   {
    "id": "knife",
@@ -466,7 +512,9 @@
    "velocity": 0,
    "zoom": 1.0,
    "moveSpeed": 1.1,
-   "weight": 0.4
+   "weight": 0.4,
+   "model": "k-weapon-knife-sharp.glb",
+   "modelLength": 0.8
   }
  ]
 }

@@ -11,3 +11,6 @@ Pre-existing assets (drone, trees, flowers, rocks, pumpkin, skyboxes, audio) hav
 
 ## Outposts and roads
 Outpost buildings are procedural placeholder boxes (no external assets); roads use the existing ambientCG dirt material tinted as gravel.
+
+## Weapon models (assets/resources/weapons/*.glb)
+- Quaternius "Ultimate Guns Pack" and Kenney weapon models, CC0, collected in https://github.com/Touhid-HZ/shooter-asset-library
