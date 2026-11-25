@@ -14,6 +14,8 @@
 #include "world.h"
 #include "box.h"
 #include "miniaudio.h"
+#include <vector>
+#include "weapon_state.h"
 
 class Player
 {
@@ -56,7 +58,13 @@ public:
     double xPosIn; // mouse x position input
     double yPosIn; // mouse y position input
     // gun related
-    bool shot; // has player taken a shot?
+    bool shot; // has player taken a shot? (stays true during the recoil animation)
+    bool fired = false; // a shot was fired during this frame (used for hit detection)
+    /// Currently selected weapon definition (nullptr if weapons.json failed to load).
+    const WeaponDef *currentWeapon() const;
+    int currentAmmo() const;
+    int currentReserve() const;
+    bool isReloading() const;
     // time
     float currentFrame; // current time/frame
     // collisions
@@ -139,6 +147,12 @@ public:
     void processKeyboardMouse(GLFWwindow *window, float deltaTime);
 
 private:
+    // weapons (data-driven, see assets/data/weapons.json)
+    std::vector<WeaponState> weapons;
+    size_t curWeapon = 0;
+    bool prevQ = false, prevE = false, weaponsReady = false;
+    void ensureWeapons();
+    void switchWeapon(size_t idx);
     // gun related
     Model gun;                // gun model
     Shader shader;            // gun shader

@@ -20,6 +20,9 @@ set(SOURCE_FILES
     src/core/ray.cpp
     src/core/world.cpp
     src/world/terrain.cpp
+    src/data/json_mini.cpp
+    src/data/weapons.cpp
+    src/data/weapon_state.cpp
     src/world/roads.cpp
     src/world/outpost_layout.cpp
     src/render/glad.c
@@ -44,6 +47,7 @@ target_include_directories(game PRIVATE
     src/render
     src/audio
     src/world
+    src/data
     include
 )
 
@@ -116,3 +120,7 @@ add_test(NAME RoadsTest COMMAND test_roads)
 add_executable(test_weapons tests/test_weapons.cpp src/data/json_mini.cpp src/data/weapons.cpp)
 target_compile_definitions(test_weapons PRIVATE WEAPONS_JSON="${CMAKE_SOURCE_DIR}/assets/data/weapons.json")
 add_test(NAME WeaponsTest COMMAND test_weapons)
+
+add_executable(test_weapon_state tests/test_weapon_state.cpp src/data/json_mini.cpp src/data/weapons.cpp src/data/weapon_state.cpp)
+target_compile_definitions(test_weapon_state PRIVATE WEAPONS_JSON="${CMAKE_SOURCE_DIR}/assets/data/weapons.json")
+add_test(NAME WeaponStateTest COMMAND test_weapon_state)

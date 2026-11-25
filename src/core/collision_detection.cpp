@@ -1,10 +1,12 @@
 #include "collision_detection.h"
+#include <cmath>
+#include <random>
 
 CollisionDetector::CollisionDetector(){}
 
 void CollisionDetector::Detect(Player &player, EnemyManager &manager)
 {
-    if (player.shot)
+    if (player.fired)
     {
         // collision detection between player;s bullet and enemy
         for (unsigned int i = 0; i < manager.enemyCount - 1; i++)
@@ -25,16 +27,23 @@ void CollisionDetector::Detect(Player &player, EnemyManager &manager)
 
 void CollisionDetector::PlayerAttacksEnemy(Player &player, std::shared_ptr<Enemy> enemy)
 {
-    // construct ray object with start position and direction of bullet
-    Ray ray(player.Position, player.Front);
-
-    // check for collision
-    if (enemy->boundingBox.intersect(ray, player.range) == true)
+    // every pellet is its own ray inside the weapon's spread cone
+    const WeaponDef *w = player.currentWeapon();
+    const int pellets = w ? w->pellets : 1;
+    const float spread = w ? glm::radians(w->spreadDeg) : 0.0f;
+    static std::mt19937 gen(12345);
+    std::uniform_real_distribution<float> jitter(-1.0f, 1.0f);
+    for (int p = 0; p < pellets; ++p)
     {
-        if (enemy->getLifeState()) // check if enemy is alive
+        glm::vec3 dir = player.Front;
+        if (spread > 0)
+            dir = glm::normalize(dir + (player.Right * jitter(gen) + player.Up * jitter(gen)) * std::tan(spread));
+        Ray ray(player.Position, dir);
+        if (enemy->boundingBox.intersect(ray, player.range) == true && enemy->getLifeState())
         {
             enemy->gotHit(); // kill enemy
             player.updateKills(); // update killcount by one
+            break;
         }
     }
 }
